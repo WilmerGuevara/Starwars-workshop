@@ -4,36 +4,39 @@
 function run(result){
     let element = document.getElementById('result');
     element.style.display = 'none';
-
-
     newOrder(JSON.parse(result))
 }
 
+//Reorders the data
 function newOrder(data){
     console.log(data);
     let movies = data.results
+    let planetKeys = ['name','terrain','gravity','population']
+    let charactersKeys = ['name','gender','hair_color','skin_color','eye_color','height','homeworld']
+    let starshipKeys = ['name','model','manufacturer','passengers']
+    
     let newOrder = []
+
     movies.forEach(movie => newOrder.push({
         'name':movie.title,
-        'planets': parseElement(movie.planets)
+        'planets': parseElements(movie.planets,planetKeys),
+        'characters': parseElements(movie.characters,charactersKeys),
+        'starships': parseElements(movie.starships,starshipKeys)
     }));
+
     console.log(newOrder)
-    //element.innerHTML = JSON.stringify(newOrder.toString());
 }
 
-function parseElement(planets){
-    let newOrder = []
-    planets.forEach(planet => httpGetAsync(planet, res => {
+//Filters every JSON
+function parseElements(elements,keys,recursive){
+    let filtered = []
+    elements.forEach(element => httpGetAsync(element, res => {
         let aux = JSON.parse(res)
-        newOrder.push({
-            'name' : aux.name,
-            'terrain' : aux.terrain,
-            'gravity' : aux.gravity,
-            'population' : aux.population
-
-        });
+        let elementFiltered = {};
+        keys.forEach(key => elementFiltered[key] = aux[key])
+        filtered.push(elementFiltered);
     }));
-    return newOrder;
+    return filtered;
 }
 
 //HTTP request
@@ -44,9 +47,12 @@ function httpGetAsync(url, callback)
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
             callback(xmlHttp.responseText);
     }
-    xmlHttp.open("GET", url, true); 
+    xmlHttp.open('GET', url, true); 
     xmlHttp.send(null);
 }
 
-httpGetAsync('https://swapi.co/api/films',run)
+function startAll(){
+    httpGetAsync('https://swapi.co/api/films',run);
+}
 
+startAll()
