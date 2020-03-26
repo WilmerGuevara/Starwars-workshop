@@ -6,3 +6,4 @@ Open html and watch the console
 
 - Second log : filtered with criteria given. 
 
+**Mandatory : open the web browser without CORS**
