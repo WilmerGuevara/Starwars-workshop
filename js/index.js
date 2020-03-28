@@ -43,8 +43,8 @@ async function parseElements(elements,keys){
         keys.forEach(key => filtered[key] = object[key]);
         return filtered;
     });
-    let final = await Promise.all(firstFilter)
-    return Promise.resolve(final);
+    
+    return await Promise.all(firstFilter);
 }
 
 //HTTP request
