@@ -31,10 +31,7 @@ async function checkArray(elements,callback){
     if(!Array.isArray(elements)){
         return callback(elements);
     }
-    let arr = [];
-    elements.forEach(element => {
-        arr.push(callback(element))
-    });
+    let arr = elements.map(element => {return callback(element)});
     return arr;
 }
 
