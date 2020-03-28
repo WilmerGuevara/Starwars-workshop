@@ -26,31 +26,45 @@ async function newOrder(data){
     return newOrder
 }
 
+
 //Check if is array or not, and executes callback
-function checkArray(elements,callback){
+async function checkArray(elements,callback){
     if(!Array.isArray(elements)){
-        return new Promise((resolve) => {
-            resolve(callback(elements));
-        });
+        return callback(elements);
     }
     let arr = [];
-    elements.forEach(element => arr.push(callback(element)));
-    return new Promise((resolve) => {
-        resolve(arr);
+    elements.forEach(element => {
+        arr.push(callback(element))
     });
+    return arr;
 }
+
+function isIterable (value) {
+    return Symbol.iterator in Object(value);
+  }
 
 //Filters elements based in key and elements
 async function parseElements(elements,keys){
     let response = await checkArray(elements,httpGetAsync);
-    let result = await Promise.all(response)
+    let result = response;
+    if(isIterable(response)){
+        result = await Promise.all(response)
+    }
     let firstFilter = await checkArray(result, async (object) => {
         let filtered = {};
-        keys.forEach(key => filtered[key] = object[key]);
+        keys.forEach(key => {
+            if(!Array.isArray(key)){
+                filtered[key] = object[key]
+            }else{
+                 parseElements(object[key[0]],key.slice(1)).then(res => filtered[key[0]] = res)
+            }
+        });
         return filtered;
     });
-
-    return await Promise.all(firstFilter);
+    if(isIterable(firstFilter)){
+        return await Promise.all(firstFilter);
+    }
+    return firstFilter;
 }
 
 //HTTP request
