@@ -2,7 +2,7 @@
 
 
 //Reorders the data
-function newOrder(data){
+async function newOrder(data){
     console.log(data);
     let movies = data.results;
     let planetKeys = ['name','terrain','gravity','population'];
@@ -10,12 +10,18 @@ function newOrder(data){
     let starshipKeys = ['name','model','manufacturer','passengers'];
     let newOrder = [];
 
-    movies.forEach(movie => newOrder.push({
-        'name':movie.title,
-        'planets': parseElements(movie.planets,planetKeys),
-        'characters': parseElements(movie.characters,charactersKeys),
-        'starships': parseElements(movie.starships,starshipKeys)
-    }));
+    for (const movie of movies) {
+        let planets = await parseElements(movie.planets,planetKeys);
+        let characters = await parseElements(movie.characters,charactersKeys);
+        let starships = await parseElements(movie.starships,starshipKeys);
+
+        newOrder.push({
+            'name':movie.title,
+            'planets': planets,
+            'characters': characters,
+            'starships': starships 
+        })
+    }
 
     return newOrder
 }
@@ -43,7 +49,7 @@ async function parseElements(elements,keys){
         keys.forEach(key => filtered[key] = object[key]);
         return filtered;
     });
-    
+
     return await Promise.all(firstFilter);
 }
 
@@ -71,7 +77,7 @@ var httpGetAsync = (url) => {
 //Function to run the script
 async function startAll(){
     let data = await httpGetAsync('https://swapi.co/api/films');
-    console.log(newOrder(data))
+    newOrder(data).then(result =>console.log(result))
 }
 
 startAll()
