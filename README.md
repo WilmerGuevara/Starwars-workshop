@@ -1,6 +1,6 @@
 # Starwars-Workshop
 
-Open html and watch the console (HTML is only as a side code to use console, you can skip if have another way to run js code)
+Open html and watch the console 
 
 - First log : request full to /films 
 
