@@ -22,7 +22,6 @@ async function newOrder(data){
             'starships': starships 
         })
     }
-
     return newOrder
 }
 
@@ -44,27 +43,26 @@ function isIterable (value) {
   }
 
 //Filters elements based in key and elements
-async function parseElements(elements,keys){
-    let response = await checkArray(elements,httpGetAsync);
-    let result = response;
-    if(isIterable(response)){
-        result = await Promise.all(response)
+async function parseElements(objectPending,keys){
+    let objects = await checkArray(objectPending,httpGetAsync);
+    if(isIterable(objects)){
+        objects = await Promise.all(objects)
     }
-    let firstFilter = await checkArray(result, async (object) => {
-        let filtered = {};
+    let filteredDict = await checkArray(objects, async (object) => {
+        let dict = {};
         keys.forEach(key => {
             if(!Array.isArray(key)){
-                filtered[key] = object[key]
+                dict[key] = object[key]
             }else{
-                 parseElements(object[key[0]],key.slice(1)).then(res => filtered[key[0]] = res)
+                 parseElements(object[key[0]],key.slice(1)).then(res => dict[key[0]] = res)
             }
         });
-        return filtered;
+        return dict;
     });
-    if(isIterable(firstFilter)){
-        return await Promise.all(firstFilter);
+    if(isIterable(filteredDict)){
+        return await Promise.all(filteredDict);
     }
-    return firstFilter;
+    return filteredDict;
 }
 
 //HTTP request
