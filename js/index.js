@@ -1,11 +1,10 @@
 'use strict'
 
-
 //Reorders the data
 async function newOrder(data){
     console.log(data);
     let movies = data.results;
-    let planetKeys = ['name','terrain','gravity','population'];
+    let planetKeys = ['name','terrain','gravity','diameter','population'];
     let charactersKeys = ['name','gender','hair_color','skin_color','eye_color','height',['homeworld','name'],['species','name','language','average_height']];
     let starshipKeys = ['name','model','manufacturer','passengers'];
     let newOrder = [];
